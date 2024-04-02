@@ -11,5 +11,18 @@ class Value:
         other=other if isinstance(other,Value) else Value(other)
         out=Value(self.data+other.data,(self,other),'+')
         return out 
+    
     def __radd__(self,other):
         return self+other
+    
+    def __mul__(self,other):
+        other=other if isinstance(other,Value) else Value(other)
+        out=Value(self.data*other.data,(self,other),'*')
+        return out
+    
+    def __neg__(self):
+        return self *-1
+    
+    def __sub__(self,other):
+        out=self+(-other)
+        return out 
