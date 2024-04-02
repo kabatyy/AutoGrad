@@ -20,9 +20,13 @@ class Value:
         out=Value(self.data*other.data,(self,other),'*')
         return out
     
+    def __rmul__(self,other):
+        return self*other
+    
     def __neg__(self):
         return self *-1
     
     def __sub__(self,other):
         out=self+(-other)
         return out 
+    
