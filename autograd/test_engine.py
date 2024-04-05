@@ -1,5 +1,5 @@
 from engine import Value 
-
+import math
 def test_ops():
     a=Value(2.2)
     b=Value(3.5)
@@ -38,6 +38,9 @@ def test_ops():
     q=m/k;q.label='q'
     assert q.data==(m.data/k.data),'incorrect value returned'
     print(q,'-->',q.label,'children -->',q._prev,'-->',q._op)
+    o=q.tanh();o.label='o'
+    assert o.data==(math.exp(2*q.data)-1)/(math.exp(2*q.data)+1)
+    print(o,'-->',o.label,'children -->',o._prev,'-->',o._op)
 test_ops()
 
      
