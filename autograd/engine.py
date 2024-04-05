@@ -1,3 +1,4 @@
+import math
 class Value:
     def __init__(self,data,_children=(),_op='',label=''):
         self.data=data
@@ -35,3 +36,12 @@ class Value:
         return out 
     def __truediv__(self,other):
         return self * other**-1
+    def tanh(self):
+        x=self.data
+        t=(math.exp(2*x)-1)/(math.exp(2*x)+1)
+        out=Value(t,(self,),'tanh')
+        return out 
+    def exp(self):
+        x=self.data
+        out=Value(math.exp(x)(self,),'exp')
+
