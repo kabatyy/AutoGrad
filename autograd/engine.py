@@ -29,4 +29,9 @@ class Value:
     def __sub__(self,other):
         out=self+(-other)
         return out 
-    
+    def __pow__(self,other):
+        assert isinstance(other,(int,float)),'Value is not supported as a power, use a float or an int'
+        out=Value(self.data**other,(self,),f'**{other}')
+        return out 
+    def __truediv__(self,other):
+        return self * other**-1
