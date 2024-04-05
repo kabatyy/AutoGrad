@@ -73,6 +73,6 @@ def test_sanity_check():
 print('---testing ops---')
 test_ops()
 print('---done---')
-print('---tesing backprop---')
+print('---tesing forward pass backprop---')
 test_sanity_check()
 print('---done---')
