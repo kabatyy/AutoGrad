@@ -41,6 +41,9 @@ def test_ops():
     o=q.tanh();o.label='o'
     assert o.data==(math.exp(2*q.data)-1)/(math.exp(2*q.data)+1)
     print(o,'-->',o.label,'children -->',o._prev,'-->',o._op)
+    s=o.exp();s.label='s'
+    assert s.data==(math.exp(o.data)), 'incorrect value returned'
+    print(s,'-->',s.label,'children -->',s._prev,'-->',s._op)
 test_ops()
 
      
