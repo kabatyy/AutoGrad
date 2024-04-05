@@ -1,5 +1,6 @@
 from engine import Value 
 import math
+import torch
 def test_ops():
     a=Value(2.2)
     b=Value(3.5)
@@ -44,6 +45,34 @@ def test_ops():
     s=o.exp();s.label='s'
     assert s.data==(math.exp(o.data)), 'incorrect value returned'
     print(s,'-->',s.label,'children -->',s._prev,'-->',s._op)
-test_ops()
-
+   
      
+def test_sanity_check():
+
+    x = Value(-4.0)
+    z = 2 * x + 2 + x
+    q = z.tanh() + z * x
+    h = (z * z).tanh()
+    y = h + q + q * x
+    y.backward()
+    xmg, ymg = x, y
+
+    x = torch.Tensor([-4.0]).double()
+    x.requires_grad = True
+    z = 2 * x + 2 + x
+    q = torch.tanh(z) + z * x
+    h = torch.tanh((z * z))
+    y = h + q + q * x
+    y.backward()
+    xpt, ypt = x, y
+
+    # forward pass went well
+    assert ymg.data == ypt.data.item()
+    # backward pass went well
+    assert xmg.grad == xpt.grad.item()
+print('---testing ops---')
+test_ops()
+print('---done---')
+print('---tesing backprop---')
+test_sanity_check()
+print('---done---')
