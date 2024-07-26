@@ -1,7 +1,5 @@
 # AutoGrad: A Learning Tool for Automatic Differentiation 
 
-**Author**[Samuel Kabati](sam.kabati@gmail.com)
-
 ![AutoGrad Illustration](./images/autograd.gif)
 
 This project features two autograd engines that follow patterns from Andrej Karpathy's [micrograd](https://github.com/karpathy/micrograd):
