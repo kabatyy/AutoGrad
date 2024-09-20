@@ -50,4 +50,13 @@ class Tensor:
     def __sub__(self, other):
         return self + (-other)
     
-        
+    def __pow__(self, other):
+        assert isinstance(other,(int, float)), "power must be a scalar"
+        out = Tensor(self.data ** other, (self,), f'**{other}')
+        def _backward():
+            self.grad += other * self.data ** (other - 1) * out.grad
+        out._backward = _backward
+        return out 
+    
+    def __truediv__(self, other):
+        return self * (other ** -1)
