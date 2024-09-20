@@ -42,4 +42,12 @@ class Tensor:
     
     def __rmul__(self, other):
         return self * other
+    
+    def __neg__(self):
+        return self * -1
+    
+    @ensure_2d_tensor
+    def __sub__(self, other):
+        return self + (-other)
+    
         
