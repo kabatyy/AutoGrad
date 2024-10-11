@@ -60,3 +60,12 @@ class Tensor:
     
     def __truediv__(self, other):
         return self * (other ** -1)
+    
+    @ensure_2d_tensor
+    def __matmul__(self, other):
+        out = Tensor(self.data @ other.data, (self, other), '@')
+        def _backward():
+            self.grad += out.grad @ other.data.T
+            other.grad += self.data.T @ out.grad
+        out._backward = _backward
+        return out 
