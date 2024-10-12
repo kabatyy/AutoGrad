@@ -1,6 +1,7 @@
 import numpy as np
 from functools import wraps
 
+
 def ensure_2d_tensor(func):
     @wraps(func)
     def wrapper(self, other):
@@ -17,7 +18,7 @@ class Tensor:
         self._op = _op
     
     def __repr__(self):
-        return f"Tensor(data={self.data}, grad={self.grad}, children={self._prev}, op={self._op})"
+        return f"Tensor(data={self.data}, grad={self.grad})"
     
     @ensure_2d_tensor
     def __add__(self, other):
@@ -44,7 +45,7 @@ class Tensor:
         return self * other
     
     def __neg__(self):
-        return self * -1
+        return self * - 1
     
     @ensure_2d_tensor
     def __sub__(self, other):
@@ -59,7 +60,7 @@ class Tensor:
         return out 
     
     def __truediv__(self, other):
-        return self * (other ** -1)
+        return self * (other ** - 1)
     
     @ensure_2d_tensor
     def __matmul__(self, other):
@@ -69,3 +70,29 @@ class Tensor:
             other.grad += self.data.T @ out.grad
         out._backward = _backward
         return out 
+    
+    def tanh(self):
+        x = self.data
+        t = (np.exp(2 * x) - 1)/(np.exp(2 * x) + 1)
+        out = Tensor(t, (self,), 'tanh')
+        def _backward():
+            self.grad += (1 - t**2) * out.grad
+        out._backward = _backward
+        return out
+    
+    def relu(self):
+        out = Tensor(np.maximum(0, self.data), (self,), 'relu')
+        def _backward():
+            self.grad += (out.data > 0).astype(np.float64) * out.grad
+        out._backward = _backward
+        return out 
+    
+    def sigmoid(self):
+        x = self.data
+        s = (1 / (1 + np.exp(-x)))
+        out = Tensor(s, (self,), 'sigmoid')
+        def _backward():
+            self.grad += (s * (1 - s))  * out.grad
+        out._backward = _backward
+        return out
+    #implement softmax 
