@@ -71,6 +71,22 @@ class Tensor:
         out._backward = _backward
         return out 
     
+    def exp(self):
+        x = np.exp(self.data)
+        out = Tensor(x, (self,), 'exp')
+        def _backward():
+            self.grad += out.data * out.grad
+        out._backward = _backward
+        return out 
+
+    def sum(self):
+        x = np.sum(self.data)
+        out = Tensor(x, (self,), 'sum')
+        def _backward():
+            self.grad += np.ones_like(self.data) * out.grad
+        out._backward = _backward
+        return out 
+    
     def tanh(self):
         x = self.data
         t = (np.exp(2 * x) - 1)/(np.exp(2 * x) + 1)
@@ -95,4 +111,11 @@ class Tensor:
             self.grad += (s * (1 - s))  * out.grad
         out._backward = _backward
         return out
-    #implement softmax 
+    
+    #simplified, not adjusted for numerical stability
+    def softmax(self):
+        exps = self.exp()
+        sum_exps = exps.sum()
+        softmax_output = exps / sum_exps
+        out = Tensor(softmax_output, (self,), 'softmax')
+        return out
