@@ -1,4 +1,4 @@
-from engine import Value 
+from autograd.core.nn import Value 
 import math
 import torch
 def test_ops():
@@ -73,6 +73,6 @@ def test_sanity_check():
 print('---testing ops---')
 test_ops()
 print('---done---')
-print('---tesing forward pass backprop---')
+print('---testing forward pass backprop---')
 test_sanity_check()
 print('---done---')

@@ -1,2 +1,7 @@
 index.ipynb
 backprop_tensors_numpy.ipynb
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+
