@@ -47,7 +47,7 @@ def test_ops():
     print(s,'-->',s.label,'children -->',s._prev,'-->',s._op)
    
      
-def test_sanity_check():
+def sanity_check():
 
     x = Value(-4.0)
     z = 2 * x + 2 + x
@@ -74,5 +74,5 @@ print('---testing ops---')
 test_ops()
 print('---done---')
 print('---testing forward pass backprop---')
-test_sanity_check()
+sanity_check()
 print('---done---')

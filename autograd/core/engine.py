@@ -89,6 +89,7 @@ def ensure_2d_tensor(func):
             other = Tensor(other)
         return func(self, other)
     return wrapper
+
 class Tensor:
     def __init__(self, data, _children=(), _op='', label=''):
         self.data = np.atleast_2d(np.array(data, dtype=np.float64))
@@ -96,6 +97,7 @@ class Tensor:
         self._backward = lambda: None
         self._prev = set(_children)
         self._op = _op
+        self.shape = np.shape(self)
     
     def __repr__(self):
         return f"Tensor(data={self.data}, grad={self.grad})"
@@ -167,6 +169,16 @@ class Tensor:
         out._backward = _backward
         return out 
     
+   
+    def log(self):
+            x= self.data + 1e-12
+            log = np.log(x)
+            out = Tensor(log, (self,), 'log')
+            def _backward():
+                self.grad += (1 / x) * out.grad
+            out._backward =_backward
+            return out
+    
     def tanh(self):
         x = self.data
         t = (np.exp(2 * x) - 1)/(np.exp(2 * x) + 1)
@@ -196,6 +208,13 @@ class Tensor:
     def softmax(self):
         exps = self.exp()
         sum_exps = exps.sum()
-        softmax_output = exps / sum_exps
+        softmax_output = (exps.data / sum_exps.data)
         out = Tensor(softmax_output, (self,), 'softmax')
         return out
+   
+    @ensure_2d_tensor
+    def cross_entropy_loss(self, target):
+        log_probs = self.log()
+        loss = -((target.data * log_probs.data).sum())
+        out = Tensor(loss, (self, target), 'cross-entropy loss')
+        return out 
