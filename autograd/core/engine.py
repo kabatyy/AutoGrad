@@ -161,14 +161,24 @@ class Tensor:
         out._backward = _backward
         return out 
 
-    def sum(self):
-        x = np.sum(self.data)
+    def sum(self, axis=None, keepdims=False):
+        x = np.sum(self.data, axis=axis, keepdims=keepdims)
         out = Tensor(x, (self,), 'sum')
         def _backward():
             self.grad += np.ones_like(self.data) * out.grad
         out._backward = _backward
         return out 
     
+    def max(self, axis=None, keepdims=False):
+        max_vals = np.max(self.data, axis=axis, keepdims=keepdims)
+        out = Tensor(max_vals, (self,), 'max')
+        def _backward():
+            grad_mask = (self.data == max_vals)
+            num_maxes = grad_mask.sum(axis=axis, keepdims=keepdims)
+            grad_mask = grad_mask.astype(np.float64) / num_maxes
+            self.grad += grad_mask * out.grad
+        out._backward = _backward
+        return out
    
     def log(self):
             x= self.data + 1e-12
