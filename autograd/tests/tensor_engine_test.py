@@ -104,7 +104,9 @@ def test_softmax():
         [0, -2],
         [3, 4]
     ])
-      result = a.softmax()
+      result = a.softmax(axis=-1, keepdims=True)
       x = torch.Tensor([[0, -2],[3, 4]])
       s = torch.softmax(x, dim=-1)
       np.testing.assert_array_almost_equal(result.data, s)
+    
+      

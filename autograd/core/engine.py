@@ -213,18 +213,30 @@ class Tensor:
             self.grad += (s * (1 - s))  * out.grad
         out._backward = _backward
         return out
-    
-    #simplified, not adjusted for numerical stability
-    def softmax(self):
-        exps = self.exp()
-        sum_exps = exps.sum()
-        softmax_output = (exps.data / sum_exps.data)
-        out = Tensor(softmax_output, (self,), 'softmax')
+      
+    def softmax(self, axis=None, keepdims=True):
+        max_val = self.max(axis=axis, keepdims=keepdims)
+        exps = (self - max_val).exp()
+        sum_exps = exps.sum(axis=axis, keepdims=keepdims)
+        out = exps / sum_exps
         return out
    
     @ensure_2d_tensor
     def cross_entropy_loss(self, target):
         log_probs = self.log()
-        loss = -((target.data * log_probs.data).sum())
-        out = Tensor(loss, (self, target), 'cross-entropy loss')
+        out = -((target * log_probs).sum())
         return out 
+    
+    def backward(self):
+        topo=[]
+        visited=set()
+        def build_topo(v):
+            if v not in visited:
+                visited.add(v)
+                for child in v._prev:
+                    build_topo(child)
+                topo.append(v)
+        build_topo(self)
+        self.grad = np.ones_like(self.data)
+        for node in reversed(topo):
+            node._backward()
