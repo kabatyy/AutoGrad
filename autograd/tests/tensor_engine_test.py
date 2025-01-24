@@ -100,13 +100,50 @@ def test_sigmoid():
      np.testing.assert_array_almost_equal(a.grad, s * (1 -s) * result.grad)
 
 def test_softmax():
-      a = Tensor([
+    a = Tensor([
         [0, -2],
         [3, 4]
     ])
-      result = a.softmax(axis=-1, keepdims=True)
-      x = torch.Tensor([[0, -2],[3, 4]])
-      s = torch.softmax(x, dim=-1)
-      np.testing.assert_array_almost_equal(result.data, s)
-    
-      
+    b = Tensor([
+        [-2],
+        [4]
+    ])
+    c = a + b  
+    x = torch.tensor([[0, -2], [3, 4]], dtype=torch.float32, requires_grad=True)
+    y = torch.tensor([[-2], [4]], dtype=torch.float32, requires_grad=True)
+    z = x + y  
+    result = c.softmax(axis=-1, keepdims=True) 
+    s = torch.softmax(z, dim=-1)  
+    np.testing.assert_array_almost_equal(result.data, s.detach().numpy(), decimal=5)
+    result.backward()  
+    grad_output = torch.ones_like(s)  
+    s.backward(grad_output)  
+    np.testing.assert_array_almost_equal(b.grad, y.grad.numpy(), decimal=5)
+    np.testing.assert_array_almost_equal(a.grad, x.grad.numpy(), decimal=5)
+
+def test_cross_entropy_loss():
+    a = Tensor([
+        [0, -2],
+        [3, 4]
+    ])
+    b = Tensor([
+        [-2],
+        [4]
+    ])
+    c = a + b  
+    target = Tensor([
+        [0, 1],
+        [1, 0]
+    ]) 
+    x = torch.tensor([[0, -2], [3, 4]], dtype=torch.float32, requires_grad=True)
+    y = torch.tensor([[-2], [4]], dtype=torch.float32, requires_grad=True)
+    z = x + y 
+    target_torch = torch.tensor([1, 0], dtype=torch.int64)  
+    result = c.softmax(axis=-1, keepdims=True)
+    loss = result.cross_entropy_loss(target, axis=-1)
+    torch_loss = torch.nn.functional.cross_entropy(z, target_torch)
+    np.testing.assert_almost_equal(loss.data, torch_loss.detach().numpy(), decimal=5)
+    loss.backward()
+    torch_loss.backward()
+    np.testing.assert_almost_equal(a.grad, x.grad.numpy(), decimal=5)
+    np.testing.assert_almost_equal(b.grad, y.grad.numpy(), decimal=5)
