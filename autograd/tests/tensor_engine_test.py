@@ -141,6 +141,7 @@ def test_cross_entropy_loss():
     target_torch = torch.tensor([1, 0], dtype=torch.int64)  
     result = c.softmax(axis=-1, keepdims=True)
     loss = result.cross_entropy_loss(target, axis=-1)
+    loss = loss.mean(axis=0, keepdims=True)
     torch_loss = torch.nn.functional.cross_entropy(z, target_torch)
     np.testing.assert_almost_equal(loss.data, torch_loss.detach().numpy(), decimal=5)
     loss.backward()
